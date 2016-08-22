@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
                        DESC
-  s.homepage         = 'https://github.com/EugeneVegner/sws-copyleaks-sdk-test.git'
+  s.homepage         = 'https://github.com/EugeneVegner/sws-copyleaks-sdk-test'
   # s.homepage         = 'https://github.com/<GITHUB_USERNAME>/PlagiarismChecker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
