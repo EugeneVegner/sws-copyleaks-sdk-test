@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'PlagiarismChecker_Example' do
+  pod 'PlagiarismChecker', :path => '../'
+
+  target 'PlagiarismChecker_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
