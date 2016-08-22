@@ -40,7 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // CopyleaksSDK Configure.
         
         Copyleaks.configure(
-            apiKey: "9E5A35A7-D9EE-4ABC-A11B-4BC3ACA0ACF9",
             sandboxMode: true,
             product: .Businesses)
         

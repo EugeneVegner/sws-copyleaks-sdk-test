@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		44EDE33D1D66005B00482966 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 44EDE33A1D66005B00482966 /* image.jpg */; };
-		44EDE33E1D66005B00482966 /* ocrbrep.png in Resources */ = {isa = PBXBuildFile; fileRef = 44EDE33B1D66005B00482966 /* ocrbrep.png */; };
-		44EDE33F1D66005B00482966 /* screenshot1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44EDE33C1D66005B00482966 /* screenshot1.png */; };
+		44442C0F1D6B42400025F494 /* doc_test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44442C0E1D6B42400025F494 /* doc_test.txt */; };
+		44EDE33E1D66005B00482966 /* ocr_test.png in Resources */ = {isa = PBXBuildFile; fileRef = 44EDE33B1D66005B00482966 /* ocr_test.png */; };
 		44EDE3471D66008C00482966 /* LanguagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EDE3401D66008C00482966 /* LanguagesViewController.swift */; };
 		44EDE3481D66008C00482966 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EDE3411D66008C00482966 /* LoginViewController.swift */; };
 		44EDE3491D66008C00482966 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EDE3421D66008C00482966 /* MainViewController.swift */; };
@@ -38,9 +37,8 @@
 
 /* Begin PBXFileReference section */
 		01298E9AC448B68BA77A30C1 /* Pods-PlagiarismChecker_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlagiarismChecker_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PlagiarismChecker_Tests/Pods-PlagiarismChecker_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		44EDE33A1D66005B00482966 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
-		44EDE33B1D66005B00482966 /* ocrbrep.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ocrbrep.png; sourceTree = "<group>"; };
-		44EDE33C1D66005B00482966 /* screenshot1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = screenshot1.png; sourceTree = "<group>"; };
+		44442C0E1D6B42400025F494 /* doc_test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doc_test.txt; sourceTree = "<group>"; };
+		44EDE33B1D66005B00482966 /* ocr_test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ocr_test.png; sourceTree = "<group>"; };
 		44EDE3401D66008C00482966 /* LanguagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LanguagesViewController.swift; sourceTree = "<group>"; };
 		44EDE3411D66008C00482966 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		44EDE3421D66008C00482966 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -140,9 +138,8 @@
 				44EDE3451D66008C00482966 /* ResultsViewController.swift */,
 				44EDE3461D66008C00482966 /* SupportedFileTypesViewController.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
-				44EDE33A1D66005B00482966 /* image.jpg */,
-				44EDE33B1D66005B00482966 /* ocrbrep.png */,
-				44EDE33C1D66005B00482966 /* screenshot1.png */,
+				44EDE33B1D66005B00482966 /* ocr_test.png */,
+				44442C0E1D6B42400025F494 /* doc_test.txt */,
 				44EDE34E1D6600AB00482966 /* Main.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
@@ -273,12 +270,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				44EDE33E1D66005B00482966 /* ocrbrep.png in Resources */,
+				44EDE33E1D66005B00482966 /* ocr_test.png in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
-				44EDE33F1D66005B00482966 /* screenshot1.png in Resources */,
 				44EDE3501D6600AB00482966 /* Main.storyboard in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
-				44EDE33D1D66005B00482966 /* image.jpg in Resources */,
+				44442C0F1D6B42400025F494 /* doc_test.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

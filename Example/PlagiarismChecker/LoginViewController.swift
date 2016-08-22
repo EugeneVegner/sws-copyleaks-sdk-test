@@ -54,8 +54,7 @@ class LoginViewController: UIViewController {
             activityIndicator.startAnimating()
             
             let cloud = CopyleaksCloud(.Businesses)
-            cloud.login(email, success: { (result) in
-                
+            cloud.login(email, apiKey: "9E5A35A7-D9EE-4ABC-A11B-4BC3ACA0ACF9", success: { (result) in
                 self.activityIndicator.stopAnimating()
                 
                 if result.isSuccess {
@@ -65,7 +64,6 @@ class LoginViewController: UIViewController {
                     Alert("Error", message: result.error?.localizedFailureReason ?? "Unknown error")
                     
                 }
-                
             })
 
         } else {

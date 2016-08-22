@@ -40,26 +40,16 @@ public class Copyleaks: NSObject {
         }
     }
     
-    /**
-     Api key.
-     Tracking your processes is available by adding the token process ID {PID} as a parameter
-     to your URL. This will allow you to follow each process individually.
-     */
+    /* Product type */
 
-
-    private var _apiKey: String?
-    public var apiKey: String? {
-        get {
-            return _apiKey
-        }
-    }
-    
     private var _productType: CopyleaksProductType?
     public var productType: CopyleaksProductType? {
         get {
             return _productType
         }
     }
+    
+    /* Default Accept Language */
     
     private var _acceptLanguage: String?
     public var acceptLanguage: String? {
@@ -82,15 +72,13 @@ public class Copyleaks: NSObject {
         return Static.instance!
     }
 
-    public class func configure(apiKey
-        key: String,
-        sandboxMode: Bool,
+    public class func configure(
+        sandboxMode mode: Bool,
         product: CopyleaksProductType,
         preferLanguage: String = CopyleaksConst.defaultAcceptLanguage)
     {
-        self.sharedSDK._sandboxMode = sandboxMode
+        self.sharedSDK._sandboxMode = mode
         self.sharedSDK._productType = product
-        self.sharedSDK._apiKey = key
         self.sharedSDK._acceptLanguage = preferLanguage
     }
     

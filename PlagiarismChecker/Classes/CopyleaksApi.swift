@@ -28,48 +28,30 @@ import MobileCoreServices
 
 // MARK: - Convenience
 
-/* Types adopting the URLStringConvertible protocol. */
-public protocol URLStringConvertible { var URLString: String { get } }
-
-/* Types adopting the URLRequestConvertible protocol. */
-public protocol URLRequestConvertible { var URLRequest: NSMutableURLRequest { get } }
-
-//func URLRequest(method: CopyleaksHTTPMethod, _ URLString: URLStringConvertible, headers: [String: String]? = nil, body: NSData? = nil) -> NSMutableURLRequest {
-//    let mutableURLRequest = NSMutableURLRequest(URL: NSURL(string: URLString.URLString)!)
-//    mutableURLRequest.HTTPMethod = method.rawValue
-//    
-//    if let headers = headers {
-//        for (headerField, headerValue) in headers {
-//            mutableURLRequest.setValue(headerValue, forHTTPHeaderField: headerField)
-//        }
-//    }
-//    
-//    if let data = body {
-//        mutableURLRequest.HTTPBody = data
-//    }
-//    
-//    return mutableURLRequest
-//}
-
-
 public class CopyleaksApi {
     
-    private var rout: URLStringConvertible = ""
+    /* Private Api parameters */
+    
+    private var rout: String = ""
     private var method: CopyleaksHTTPMethod = .GET
     private var parameters: [String: AnyObject]? = nil
-    private var body: NSData? = nil
     
+    /**
+     The background completion handler closure provided by the UIApplicationDelegate
+     'application:handleEventsForBackgroundURLSession:completionHandler: method. By setting the background
+     completion handler, the SessionDelegate `sessionDidFinishEventsForBackgroundURLSession` closure implementation
+     will automatically call the handler.
+     */
+
+    public var backgroundCompletionHandler: (() -> Void)?
     
     let queue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
     public let session: NSURLSession
     public let delegate: CopyleaksSessionDelegate
-
     
     
-    //
-    private var headers: [String: String]? = nil
-    
-    public var request: CopyleaksRequest?
+    /* Copyleaks headers */
+    private var headers: [String: String] = [String: String]()
     
     /* Init Api */
     
@@ -77,77 +59,53 @@ public class CopyleaksApi {
         method: CopyleaksHTTPMethod,
         rout: String,
         parameters: [String: AnyObject]? = nil,
-        headers: [String: String]? = nil,
-        body: NSData? = nil)
+        headers: [String: String]? = nil)
     {
-        
         self.method = method
         self.rout = rout
         self.parameters = parameters
-        self.headers = headers
-        self.body = body
         
-    }
+        if headers != nil {
+            self.headers = headers!
+        }
 
-    // MARK: - Setup headers
-    
-    /* Creates default HTTP Headers */
+        // Configure default headers
+        
+        self.headers[CopyleaksConst.cacheControlHeader] = CopyleaksConst.cacheControlValue
+        self.headers[CopyleaksConst.contentTypeHeader] = CopyleaksHTTPContentType.JSON
+        self.headers[CopyleaksConst.userAgentHeader] = CopyleaksConst.userAgentValue
+        self.headers[CopyleaksConst.acceptLanguageHeader] = CopyleaksConst.defaultAcceptLanguage
 
-    public static let defaultHTTPHeaders: [String: String] = {
-        return [
-            CopyleaksConst.cacheControlHeader: CopyleaksConst.cacheControlValue,
-            CopyleaksConst.contentTypeHeader: CopyleaksHTTPContentType.JSON,
-            CopyleaksConst.userAgentHeader: CopyleaksConst.userAgentValue,
-            CopyleaksConst.acceptLanguageHeader: CopyleaksConst.defaultAcceptLanguage// acceptLanguage
-        ]
-    }()
-    
-    public static let authHTTPHeaders: [String: String] = {
-        var headers:[String: String] = defaultHTTPHeaders
-        headers["Authorization"] = CopyleaksToken.getAccessToken()!.generateAccessToken()
-        return headers
-    }()
-    
-    
-    private func configureOptionalHeaders() -> [String: String] {
-        var headers:[String: String] = CopyleaksCloud.authHTTPHeaders
-        if Copyleaks.sharedSDK.sandboxMode {
-            headers["copyleaks-sandbox-mode"] = "true"
-        }
-        if allowPartialScan {
-            headers["copyleaks-allow-partial-scan"] = "true"
-        }
-        if let val = httpCallback {
-            headers["copyleaks-http-callback"] = val
-        }
-        if let val = emailCallback {
-            headers["copyleaks-email-callback"] = val
-        }
-        if let val = clientCustomMessage {
-            headers["copyleaks-client-custom-Message"] = val
+        // Configure Authorization header
+        
+        if let token = CopyleaksToken.getAccessToken()?.generateAccessToken() {
+            self.headers["Authorization"] = token
         }
         
-        return headers
+        let config = NSURLSessionConfiguration.defaultSessionConfiguration()
+        config.HTTPAdditionalHeaders = self.headers
+        self.delegate = CopyleaksSessionDelegate()
+        self.session = NSURLSession(configuration: config, delegate: delegate, delegateQueue: nil)
+        delegate.sessionDidFinishEventsForBackgroundURLSession = { [weak self] session in
+            guard let strongSelf = self else { return }
+            dispatch_async(dispatch_get_main_queue()) { strongSelf.backgroundCompletionHandler?() }
+        }
+        
     }
-
-
+    
     // MARK: - Request Methods
     
     /* Request constructor */
   
     private func configureRequest(
-        method: CopyleaksHTTPMethod,
-        _ URLString: URLStringConvertible,
-          headers: [String: String]? = nil,
+        _ URL: NSURL,
           body: NSData? = nil) -> NSMutableURLRequest
     {
-        let mutableURLRequest = NSMutableURLRequest(URL: NSURL(string: URLString.URLString)!)
+        let mutableURLRequest = NSMutableURLRequest(URL: URL)
         mutableURLRequest.HTTPMethod = method.rawValue
         
-        if let headers = headers {
-            for (headerField, headerValue) in headers {
-                mutableURLRequest.setValue(headerValue, forHTTPHeaderField: headerField)
-            }
+        for (headerField, headerValue) in headers {
+            mutableURLRequest.setValue(headerValue, forHTTPHeaderField: headerField)
         }
         
         if let data = body {
@@ -158,40 +116,23 @@ public class CopyleaksApi {
     }
 
     
-    
     /**
-     Creates a request using the shared manager instance for the specified method, rout string, parameters, headers and body.
-     
-     - parameter method:     The HTTP method.
-     - parameter rout:       The API rout.
-     - parameter parameters: The parameters. `nil` by default.
-     - parameter headers:    The HTTP headers. `nil` by default.
-     - parameter body:       The HTTP body. `nil` by default.
+     Creates a request
+     - parameter body:  The Copyleaks request body. Dafault value is 'nil'.
      
      - returns: The created request.
      */
     
-    public func request (
-        method: CopyleaksHTTPMethod,
-        _ rout: String,
-          _ parameters: [String: AnyObject]? = nil,
-            _ headers: [String: String]? = nil,
-              _ body: NSData? = nil) -> CopyleaksRequest {
+    public func request(body: NSData? = nil) -> CopyleaksRequest
+    {
         
         let components = NSURLComponents()
         components.scheme = "https"
         components.host = CopyleaksConst.serviceHost
         components.path = "/" + CopyleaksConst.serviceVersion + "/" + rout
         
-        var requestHeaders = headers
-        if requestHeaders == nil {
-            //requestHeaders = CopyleaksCloud.defaultHTTPHeaders
-        }
-        
         let mutableURLRequest = self.configureRequest(
-            method,
             components.URL!,
-            headers: requestHeaders,
             body: body)
         
         do {
@@ -205,7 +146,7 @@ public class CopyleaksApi {
         }
         
         var dataTask: NSURLSessionDataTask!
-        dispatch_sync(queue) { dataTask = self.session.dataTaskWithRequest(mutableURLRequest.URLRequest) }
+        dispatch_sync(queue) { dataTask = self.session.dataTaskWithRequest(mutableURLRequest.mutableCopy() as! NSMutableURLRequest) }
         
         let request = CopyleaksRequest(session: session, task: dataTask)
         delegate[request.delegate.task] = request.delegate
@@ -219,20 +160,15 @@ public class CopyleaksApi {
     
     /**
      Creates a request for uploading File to the specified URL request.
-     
      - parameter fileURL:   The File URL.
-     - parameter rout:      The HTTP rout.
      - parameter language:  The Language Code that identifies the language of the content.
-     - parameter headers:   The HTTP headers. `nil` by default.
      
      - returns: The created upload request.
      */
     
     public func uploadFile (
         _ fileURL : NSURL,
-          rout: String,
-          language: String,
-          headers: [String: String]? = nil)
+          language: String)
         -> CopyleaksRequest
     {
         let components = NSURLComponents()
@@ -248,7 +184,7 @@ public class CopyleaksApi {
         if let
             fileName = fileURL.lastPathComponent,
             pathExtension = fileURL.pathExtension,
-            uploadFile: NSData = NSFileManager.defaultManager().contentsAtPath(fileURL.URLString)
+            uploadFile: NSData = NSFileManager.defaultManager().contentsAtPath(fileURL.absoluteString)
         {
             let mimeType = mimeTypeForPathExtension(pathExtension)
             
@@ -262,21 +198,15 @@ public class CopyleaksApi {
         
         // Configure headers
         
-        var uploadHeader = headers
-        if uploadHeader == nil {
-            uploadHeader = CopyleaksCloud.authHTTPHeaders
-        }
-        uploadHeader!["Accept"] = "application/json"
-        uploadHeader![CopyleaksConst.contentTypeHeader] = "multipart/form-data;boundary="+boundary
-        uploadHeader!["Content-Length"] = String(uploadData.length)
+        headers["Accept"] = "application/json"
+        headers[CopyleaksConst.contentTypeHeader] = "multipart/form-data;boundary="+boundary
+        headers["Content-Length"] = String(uploadData.length)
+        
         
         let mutableURLRequest = self.configureRequest(
-            .POST,
             components.URL!,
-            headers: uploadHeader)
-        
-        mutableURLRequest.HTTPBody = uploadData
-        
+            body: uploadData)
+
         var uploadTask: NSURLSessionUploadTask!
         dispatch_sync(queue) {
             uploadTask = self.session.uploadTaskWithRequest(mutableURLRequest, fromData: uploadData)
@@ -308,71 +238,36 @@ public class CopyleaksApi {
     private func generateBoundary() -> String {
         return String(format: "copyleaks.boundary.%08x%08x", arc4random(), arc4random())
     }
-
-}
-
-public class CopyleaksHeaders: (String, String) {
-
-    /**
-     HTTP-Callbacks
-     Add the Http request header copyleaks-http-callback with the URL of your endpoint.
-     Tracking your processes is available by adding the token process ID {PID} as a parameter
-     to your URL. This will allow you to follow each process individually.
-     */
-    
-    public var httpCallback: String?
-    
     
     /**
-     Email-Callbacks
-     Register a callback email to get informed when the request has been completed.
-     When the API request status is complete, you will get an email to your inbox and
-     the scan results will be available, using the result (Academic \ Businesses) method.
+     Callbacks optional headers
+     Copyleaks API supports two types of completion callbacks that are invoked once the process has
+     been completed, with or without success.
+     When using callbacks, there is no need to check the request's status manually. We will automatically
+     inform you when the process has completed running and the results are ready.
      */
     
-    public var emailCallback: String?
-    
-    /**
-     Custom Fields
-     You can add custom payload to the request headers. The payload is stored in a
-     'dictionary' representing a collection of string key and string value pairs.
-     */
-    
-    public var clientCustomMessage: String?
-    
-    /**
-     Allow Partial Scan
-     If you don't have enough credits to scan the entire submitted text, part of the
-     text will be scanned, according to the amount of credits you have left.
-     
-     For example, you have 5 credits and you would like to scan text that requires 10 credits.
-     If you added the copyleaks-allow-partial-scanto your request only 5 pages out of 10 will
-     be scanned. Otherwise, none of the pages will be scanned and you will get back an error
-     messsage stating that you don't have enough credits to complete the scan.
-     */
-    
-    public var allowPartialScan: Bool = false
-
-
-    public init(
-        httpCallback: String? = nil,
-        emailCallback: String? = nil,
-        clientCustomMessage: String? = nil,
-        allowPartialScan: Bool = false)
+    public func configureOptionalHeaders(
+        _ httpCallback: String? = nil,
+          _ emailCallback: String? = nil,
+            _ clientCustomMessage: String? = nil,
+              _ allowPartialScan: Bool = false)
     {
-        self.httpCallback = httpCallback
-        self.emailCallback = emailCallback
-        self.clientCustomMessage = clientCustomMessage
-        self.allowPartialScan = allowPartialScan
+        if Copyleaks.sharedSDK.sandboxMode {
+            headers["copyleaks-sandbox-mode"] = "true"
+        }
+        if allowPartialScan {
+            headers["copyleaks-allow-partial-scan"] = "true"
+        }
+        if let val = httpCallback {
+            headers["copyleaks-http-callback"] = val
+        }
+        if let val = emailCallback {
+            headers["copyleaks-email-callback"] = val
+        }
+        if let val = clientCustomMessage {
+            headers["copyleaks-client-custom-Message"] = val
+        }
     }
-    
-    required convenience public init(dictionaryLiteral elements: (NSCopying, AnyObject)...) {
-        fatalError("init(dictionaryLiteral:) has not been implemented")
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
 
 }

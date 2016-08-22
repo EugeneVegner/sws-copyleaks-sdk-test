@@ -80,7 +80,7 @@ class MainViewController: UIViewController {
             return
         }
         activityIndicator.startAnimating()
-        let imagePath: String = NSBundle.mainBundle().pathForResource("image", ofType: "jpg")!
+        let imagePath: String = NSBundle.mainBundle().pathForResource("doc_test", ofType: "txt")!
 
         let cloud = CopyleaksCloud(.Businesses)
         cloud.allowPartialScan = true
@@ -97,7 +97,7 @@ class MainViewController: UIViewController {
             return
         }
         activityIndicator.startAnimating()
-        let imagePath: String = NSBundle.mainBundle().pathForResource("image", ofType: "jpg")!
+        let imagePath: String = NSBundle.mainBundle().pathForResource("ocr_test", ofType: "png")!
 
         let cloud = CopyleaksCloud(.Businesses)
         cloud.allowPartialScan = true

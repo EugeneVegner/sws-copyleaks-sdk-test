@@ -204,3 +204,13 @@ extension CopyleaksRequest {
 
 }
 
+/* Copyleaks NSError extension */
+
+extension NSError {
+    static func error(code: Int = 0, message: String? = nil) -> NSError {
+        let userInfo = [NSLocalizedFailureReasonErrorKey: message ?? "Unknown error"]
+        return NSError(domain: CopyleaksConst.errorDomain, code: code, userInfo: userInfo)
+    }
+}
+
+
