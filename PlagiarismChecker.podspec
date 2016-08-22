@@ -20,12 +20,13 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
                        DESC
-
-  s.homepage         = 'https://github.com/<GITHUB_USERNAME>/PlagiarismChecker'
+  s.homepage         = 'https://github.com/EugeneVegner/sws-copyleaks-sdk-test.git'
+  # s.homepage         = 'https://github.com/<GITHUB_USERNAME>/PlagiarismChecker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Eugene Vegner' => 'eugene.vegner@gmail.com' }
-  s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/PlagiarismChecker.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/EugeneVegner/sws-copyleaks-sdk-test.git', :tag => s.version.to_s }
+  # s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/PlagiarismChecker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
